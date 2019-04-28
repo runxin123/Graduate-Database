@@ -4,10 +4,11 @@
 # import os
 import numpy as np
 import re
-
+from scipy.integrate import simps
 #
 import plotly.plotly as pl
 import plotly.graph_objs as go
+import MatFunction as mf
 from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
 class POSCAR(object):
     first_line = ''
@@ -449,16 +450,18 @@ class LOCPOT(object):
                     self.interval = i
                 if i>self.interval:
                     line_t = line.strip().split()
-                    self.rawdata.append(line_t)
+                    # for t in line_t:
 
 
 class DOSCAR(object):
     rawdata = {}
     data_x = {}
     data_y = {}
-    interval = 7
-    nedos_step =301 #default step of NEDOS get from the NEDOS
+    interval = 7 # get interval from the DOSCAR using
+    nedos_step =302 #default step of NEDOS get from the NEDOS
     signal = 0
+    d_center = {}
+    name = ['s','px','py','pz','dxy','dyz','dxz','dz2','dx2','f1','f2','f3','f4','f5','f6','f7']
     def read(self,filedir,filename):
         with open(filedir+'/'+filename,'r') as f:
             i = 1
@@ -471,37 +474,87 @@ class DOSCAR(object):
                     line_a.append(line_t)
                     # print(line_a)
                     if (i-self.interval)%self.nedos_step == 0:
+                        #line_a.pop(0)
+                        line_a.pop()
                         self.rawdata[self.signal] = line_a
                         # print(line_a)
                         # print(self.rawdata[1])
+
                         self.signal = self.signal+1
                         line_a = []
+
+
         # print(self.rawdata[1])
     def parse(self):
         data_x_t = []
         data_y_t = []
-        for i in self.rawdata[1]:
-            data_x_t.append(float(i[0]))
-            data_y_t.append(float(i[1]))
-        self.data_x[1] = data_x_t
-        self.data_y[1] = data_y_t
-    def test(self):
-        N = 1000
-        random_x = np.random.randn(N)
-        random_y = np.random.randn(N)
-        x_t = self.data_x[1]
-        y_t = self.data_y[1]
-        # Create a trace
+        for j in range(1,self.signal):
+            for i in self.rawdata[j]:
+                data_x_t.append(float(i[0]))
+                data_y_t.append(float(i[1]))
+            self.data_x[j] = data_x_t
+            self.data_y[j] = data_y_t
+            data_x_t = []
+            data_y_t = []
+    def test(self,item_num=6):
+        # N = 1000
+        # random_x = np.random.randn(N)
+        # random_y = np.random.randn(N)
 
-        trace = go.Scatter(
-            x=x_t,
-            y=y_t,
-            mode='lines+markers'
-        )
+        if item_num<(self.signal-1):
+            x_t  ={}
+            y_t = {}
+            trace_t = []
+            for i in range(1,item_num):
+                x_t[i] = self.data_x[i]
+                y_t[i] = self.data_y[i]
 
-        data = [trace]
-
-        # Plot and embed in ipython notebook!
-        plot(data, filename='basic-scatter')
+            # Create a trace
+            for i in range(1,item_num):
+                trace = go.Scatter(
+                    x=x_t[i],
+                    y=y_t[i],
+                    name = self.name[i],
+                    mode='lines+markers'
+                )
+                trace_t.append(trace)
+            layout = dict(title = 'Electronic Density of States',yaxis = dict(title='Density(states/eV)'),xaxis = dict(title='Energy(eV)'))
+            data = trace_t
+            fig = dict(data=data,layout=layout)
+            # Plot and embed in ipython notebook!
+            plot(fig, filename='basic-scatter')
+        else:
+            print("item_num>signal")
+            pass
 
         # or plot with: plot_url = py.plot(data, filename='basic-line')
+
+    def dcenter(self,start,end,index=1):
+        # index was the intergrated curve of the dcenter and using for index=1
+        # intergrate from start to end [start ,end]
+        # calculate the dos intergrate and the dcenter
+        if start <end :
+            intergrate_x = np.arange(start,end)
+
+            dcenter_datax = np.array(self.data_x[index])
+            dcenter_datay = np.array(self.data_y[index])
+
+            s_index = mf.findIndex(dcenter_datax,start)
+            e_index = mf.findIndex(dcenter_datax,end)
+
+            y_data = dcenter_datay[s_index:e_index+1]
+            x_data = dcenter_datax[s_index:e_index+1]
+            xy_data = y_data*x_data
+
+            dcenter_devided = simps(y_data,x_data)
+            dcenter_devide = simps(xy_data,x_data)
+            # dcenter_devide = simps(dcenter_dataxy,self.data_x[1])
+            dcenter_result = dcenter_devide/dcenter_devided
+            self.d_center['result'] = dcenter_result
+            self.d_center['start'] = dcenter_datax[s_index]
+            self.d_center['end'] = dcenter_datax[e_index]
+            # x = np.arange(-25,7)
+            print(dcenter_result)# intergrate from the begin to end
+        else:
+            print("error was start lt end")
+            pass
