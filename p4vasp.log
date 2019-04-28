@@ -1,0 +1,169 @@
+STATUS:Searching for applets
+EXCEPT:Traceback (most recent call last):
+          File "F:\p4vasp-0.3.1\p4vasp-0.3.1\lib\p4vasp\applet\__init__.py", line 102, in findApplets
+           o=getClass(c)
+          File "F:\p4vasp-0.3.1\p4vasp-0.3.1\lib\p4vasp\applet\__init__.py", line 73, in getClass
+           exec "import %s\nc=%s\n"%(join(v[:-1],"."),c)
+          File "<string>", line 2, in ?
+        AttributeError: 'module' object has no attribute 'ToolboxApplet'
+       
+EXCEPT:Traceback (most recent call last):
+          File "F:\p4vasp-0.3.1\p4vasp-0.3.1\lib\p4vasp\applet\__init__.py", line 102, in findApplets
+           o=getClass(c)
+          File "F:\p4vasp-0.3.1\p4vasp-0.3.1\lib\p4vasp\applet\__init__.py", line 73, in getClass
+           exec "import %s\nc=%s\n"%(join(v[:-1],"."),c)
+          File "<string>", line 1, in ?
+          File "F:\p4vasp-0.3.1\p4vasp-0.3.1\lib\p4vasp\applet\VACApplet.py", line 29, in ?
+           from Numeric import *
+        ImportError: No module named Numeric
+       
+STATUS:Creating menu items
+MSG   :Add menu Edit::New
+MSG   :Add menu Structure::Window
+MSG   :Add menu Structure::Control
+MSG   :Add menu Electronic::DOS + bands
+MSG   :Add menu Electronic::Local DOS+bands control
+MSG   :Add menu Edit::Builder
+MSG   :Add menu Edit::Edit sub-Z-matrix
+MSG   :Add menu Electronic::Bands (old)
+MSG   :Add menu Convergence::Energy
+MSG   :Add menu Convergence::Forces
+MSG   :Add menu Electronic::Local bandstructure (old)
+MSG   :Add menu Electronic::Local DOS (old)
+MSG   :Add menu Electronic::Local potential
+MSG   :Add menu Structure::Measure
+MSG   :Add menu Edit::Move atoms
+MSG   :Add menu Edit::Multiply cell
+MSG   :Add menu Edit::Rotate atoms
+MSG   :Add menu Convergence::Selected forces
+MSG   :Add menu Structure::Show/hide atoms
+MSG   :Add menu Electronic::STM Window
+MSG   :Add menu Electronic::STM Control
+MSG   :Add menu Structure::Show (old)
+MSG   :Add menu Electronic::Total DOS (old)
+STATUS:Initializing toolbar buttons
+STATUS:Initializing selection applet
+STATUS:loading setup
+ERROR : Can not read setup.xml
+STATUS:setup loaded
+STATUS:reading vasprun.xml
+ERROR : Error reading property DOM
+EXCEPT:Traceback (most recent call last):
+          File "F:\p4vasp-0.3.1\p4vasp-0.3.1\lib\p4vasp\Property.py", line 158, in get
+           self.value=self.read()
+          File "F:\p4vasp-0.3.1\p4vasp-0.3.1\lib\p4vasp\Property.py", line 171, in read
+           return apply(self.read_func,(self,))
+          File "F:\p4vasp-0.3.1\p4vasp-0.3.1\lib\p4vasp\SystemPM.py", line 348, in <lambda>
+           read=lambda x:parseXMLfromURL(x.manager.URL))
+          File "F:\p4vasp-0.3.1\p4vasp-0.3.1\lib\p4vasp\util.py", line 460, in parseXMLfromURL
+           return parseXML(url)
+          File "F:\p4vasp-0.3.1\p4vasp-0.3.1\lib\p4vasp\util.py", line 430, in parseXML
+           raise IOError,"No such file or directory: '%s'"%path
+        IOError: No such file or directory: 'vasprun.xml'
+       
+ERROR : Error reading property INCAR
+EXCEPT:Traceback (most recent call last):
+          File "F:\p4vasp-0.3.1\p4vasp-0.3.1\lib\p4vasp\Property.py", line 158, in get
+           self.value=self.read()
+          File "F:\p4vasp-0.3.1\p4vasp-0.3.1\lib\p4vasp\Property.py", line 171, in read
+           return apply(self.read_func,(self,))
+          File "F:\p4vasp-0.3.1\p4vasp-0.3.1\lib\p4vasp\SystemPM.py", line 350, in <lambda>
+           read=lambda x:Incar(x.manager.DOM.getElementsByTagName("incar")[0]))
+        AttributeError: 'NoneType' object has no attribute 'getElementsByTagName'
+       
+ERROR : Error reading property NAME
+EXCEPT:Traceback (most recent call last):
+          File "F:\p4vasp-0.3.1\p4vasp-0.3.1\lib\p4vasp\Property.py", line 158, in get
+           self.value=self.read()
+          File "F:\p4vasp-0.3.1\p4vasp-0.3.1\lib\p4vasp\Property.py", line 171, in read
+           return apply(self.read_func,(self,))
+          File "F:\p4vasp-0.3.1\p4vasp-0.3.1\lib\p4vasp\SystemPM.py", line 356, in <lambda>
+           read=lambda x:x.manager.INCAR["SYSTEM"])
+        TypeError: unsubscriptable object
+       
+STATUS:reading vasprun.xml OK
+STATUS:OK
+STATUS:reading graph dos from F:\p4vasp-0.3.1\p4vasp-0.3.1\data\graphs\dos.agr
+STATUS:reading graph dos_x from F:\p4vasp-0.3.1\p4vasp-0.3.1\data\graphs\dos_x.agr
+STATUS:reading graph dos_y from F:\p4vasp-0.3.1\p4vasp-0.3.1\data\graphs\dos_y.agr
+STATUS:reading graph bands from F:\p4vasp-0.3.1\p4vasp-0.3.1\data\graphs\bands.agr
+STATUS:reading graph dosbands from F:\p4vasp-0.3.1\p4vasp-0.3.1\data\graphs\dosbands.agr
+STATUS:Update
+STATUS:Update data
+MSG   :EFermi hack: reading EFermi from DOSCAR
+ERROR : EFermi hack failed
+EXCEPT:Traceback (most recent call last):
+          File "F:\p4vasp-0.3.1\p4vasp-0.3.1\lib\p4vasp\SystemPM.py", line 645, in getEFermi
+           d=open(x.manager.PATH+"DOSCAR","r")
+        IOError: [Errno 2] No such file or directory: 'DOSCAR'
+       
+ERROR : Error reading property E_FERMI
+EXCEPT:Traceback (most recent call last):
+          File "F:\p4vasp-0.3.1\p4vasp-0.3.1\lib\p4vasp\Property.py", line 158, in get
+           self.value=self.read()
+          File "F:\p4vasp-0.3.1\p4vasp-0.3.1\lib\p4vasp\Property.py", line 171, in read
+           return apply(self.read_func,(self,))
+          File "F:\p4vasp-0.3.1\p4vasp-0.3.1\lib\p4vasp\SystemPM.py", line 645, in getEFermi
+           d=open(x.manager.PATH+"DOSCAR","r")
+        IOError: [Errno 2] No such file or directory: 'DOSCAR'
+       
+STATUS:Fermi energy not available, using 0.0
+STATUS:Read structure
+STATUS:Parsing initial structure
+ERROR : Error reading property ATOMINFO
+EXCEPT:Traceback (most recent call last):
+          File "F:\p4vasp-0.3.1\p4vasp-0.3.1\lib\p4vasp\Property.py", line 158, in get
+           self.value=self.read()
+          File "F:\p4vasp-0.3.1\p4vasp-0.3.1\lib\p4vasp\Property.py", line 171, in read
+           return apply(self.read_func,(self,))
+          File "F:\p4vasp-0.3.1\p4vasp-0.3.1\lib\p4vasp\SystemPM.py", line 399, in getAtomInfo
+           return AtomInfo(dom.getElementsByTagName("atominfo")[0])
+        AttributeError: 'NoneType' object has no attribute 'getElementsByTagName'
+       
+ERROR : Error - no initial structure available
+EXCEPT:Traceback (most recent call last):
+          File "F:\p4vasp-0.3.1\p4vasp-0.3.1\lib\p4vasp\SystemPM.py", line 782, in getInitialStructure
+           for e in dom.getElementsByTagName("structure"):
+        AttributeError: 'NoneType' object has no attribute 'getElementsByTagName'
+       
+ERROR : Error reading property INITIAL_STRUCTURE
+EXCEPT:Traceback (most recent call last):
+          File "F:\p4vasp-0.3.1\p4vasp-0.3.1\lib\p4vasp\Property.py", line 158, in get
+           self.value=self.read()
+          File "F:\p4vasp-0.3.1\p4vasp-0.3.1\lib\p4vasp\Property.py", line 171, in read
+           return apply(self.read_func,(self,))
+          File "F:\p4vasp-0.3.1\p4vasp-0.3.1\lib\p4vasp\SystemPM.py", line 782, in getInitialStructure
+           for e in dom.getElementsByTagName("structure"):
+        AttributeError: 'NoneType' object has no attribute 'getElementsByTagName'
+       
+STATUS:OK
+STATUS:Update DOS data
+STATUS:Parsing DOS, please wait
+ERROR : Error - no DOS available
+EXCEPT:Traceback (most recent call last):
+          File "F:\p4vasp-0.3.1\p4vasp-0.3.1\lib\p4vasp\SystemPM.py", line 665, in getTotalDOS
+           dos    =  dom.getElementsByTagName("dos")[0]
+        AttributeError: 'NoneType' object has no attribute 'getElementsByTagName'
+       
+ERROR : Error reading property TOTAL_DOS
+EXCEPT:Traceback (most recent call last):
+          File "F:\p4vasp-0.3.1\p4vasp-0.3.1\lib\p4vasp\Property.py", line 158, in get
+           self.value=self.read()
+          File "F:\p4vasp-0.3.1\p4vasp-0.3.1\lib\p4vasp\Property.py", line 171, in read
+           return apply(self.read_func,(self,))
+          File "F:\p4vasp-0.3.1\p4vasp-0.3.1\lib\p4vasp\SystemPM.py", line 665, in getTotalDOS
+           dos    =  dom.getElementsByTagName("dos")[0]
+        AttributeError: 'NoneType' object has no attribute 'getElementsByTagName'
+       
+STATUS:OK
+STATUS:OK
+STATUS:OK
+STATUS:Update
+STATUS:Update data
+STATUS:Fermi energy not available, using 0.0
+STATUS:Read structure
+STATUS:OK
+STATUS:Update DOS data
+STATUS:OK
+STATUS:OK
+STATUS:OK
