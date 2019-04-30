@@ -2,6 +2,7 @@ from ase import Atoms
 from ase.build import fcc111,add_adsorbate,bulk,bcc100,bcc110,bcc111,fcc110,fcc100,fcc211,hcp0001
 from ase.io import read,write
 # import ase.build as bd
+from ase.constraints import FixAtoms,FixedPlane
 import numpy as np
 from ase.collections import g2
 from ase.build import molecule
@@ -12,11 +13,12 @@ class autogen(object):
 	'''
 	auto genarator the slab and adsorbate
 	'''
-	# slab_name = ['Pt','Pd','Rh','Ru','Ag','Au','Pb','Cu','Fe','Ni','Co','Ir','Mo']
-	slab_name = ['Ir']
+	slab_name = ['Pt','Pd','Rh','Ru','Ag','Au','Pb','Cu','Fe','Ni','Co','Ir','Mo']
+	# slab_name = ['Ir']
 	slabs = [] # build slabs array()
 	s_types = {} # slab types 
 	adsorbate_name = ['CO','CO2','NO','H2','H2O','NO2','O','H','OH','N2O']
+	# adsorbate_name = ['NH3']
 	adsorbates = {}
 	vacuum = 15.0
 	lattice_indice = {'fcc':{'111':['ontop','fcc','hcp','bridge'],'110':['ontop','longbridge','shortbridge','hollow'],'100':['ontop','bridge','hollow']},
@@ -77,12 +79,13 @@ class autogen(object):
 				write(str(slabdir_t+'POSCAR'),i['slab'])
 				modifyPOSCAR(slabdir_t,'POSCAR')
 				for j in self.s_types[i['types']]:
-					ads_dir = i['element']+'/'+i['types']+'/'+ads+'/'+j
+					ads_dir = i['element']+'/'+ads+'/'+i['types']+'/'+j
 					filedir_t = './Database'+'/'+ads_dir
 					mkdirs(filedir_t)
 					print('adsorbate_t[ads] = '+str(adsorbate_t[ads]))
 					slab_t = copy.deepcopy(i['slab'])
-					adsorption(filedir_t,'POSCAR',slab_t,adsorbate_t[ads],j)
+					d_slab = fixlayers(slab_t,2)
+					adsorption(filedir_t,'POSCAR',d_slab,adsorbate_t[ads],j)
 					modifyPOSCAR(filedir_t,'POSCAR')
 	# get slab_name
 	def get_slab_name(self):
@@ -106,10 +109,22 @@ def test():
 	# print(adsorbate)
 	# # co.set_cell(2*np.identity(3))
 	# # co.set_positions([(0,0,0),(0,0,1.1)])
+
+	# # slab = fcc111('Al', size=(2, 2, 3))
+	# # add_adsorbate(slab, 'Au', 1.7, 'ontop')
+	# # slab.center(axis=2, vacuum=4.0)
+
 	# slab = fcc111('Pb',(2,2,3), a=3.7,vacuum=15.0)
-	# adsorbate[1].z = 1.1
-	# add_adsorbate(slab,adsorbate,1.9,'ontop')
-	# write('POSCAR',slab*(1,1,1))
+
+	# mask = [atom.tag > 1 for atom in slab]
+	# #print(mask)
+	# fixlayers = FixAtoms(mask=mask)
+	# # plane = FixedPlane(-1, (1, 0, 0))
+	# slab.set_constraint(fixlayers)
+
+	# # adsorbate[1].z = 1.1
+	# # add_adsorbate(slab,adsorbate,1.9,'ontop')
+	# write('POSCAR',slab)
 	# pass
 	c = autogen()
 	c.b_slab('Pt',c.get_slab_name(),3,c.get_lattice_indice(),15)
@@ -191,3 +206,11 @@ def modifyPOSCAR(filedir,filename):
 	s = ''.join(lines)
 	with open(filedir+'/'+filename,'w') as f:
 		f.write(s)
+
+def fixlayers(slab,layer):
+	mask = [atom.tag > layer for atom in slab]
+	#print(mask)
+	fixlayers = FixAtoms(mask=mask)
+	# plane = FixedPlane(-1, (1, 0, 0))
+	slab.set_constraint(fixlayers)
+	return slab
