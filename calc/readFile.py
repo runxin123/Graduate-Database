@@ -10,6 +10,7 @@ import plotly.plotly as pl
 import plotly.graph_objs as go
 import MatFunction as mf
 from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
+import copy
 class POSCAR(object):
     first_line = ''
     element_types = []
@@ -452,8 +453,97 @@ class LOCPOT(object):
                     line_t = line.strip().split()
                     # for t in line_t:
 
+class EIGENVAL(object):
+    enginval_array = {}
+    # plot the enginval energy for the class in the Energy plot
+    """docstring for enginval"""
+    mode_num  = 101 
+    mode = []
+    symmtric = []
+    # energy structrue mode numbers 
+    file = {}
+    def __init__(self, arg):
+        super(enginval, self).__init__()
+        self.arg = arg
+    def read(self,filedir,filename):
+        with open(filedir+'/'+filename,'r') as f:
+            line_a = []
+            for line in f:
+                line_t = line.strip().split()
+                line_a.append(line_t)
+                # print(len(line_t))
+                if len(line_t) == 0 :
+                    # print('if')
+                    # print(line_a)
+                    self.enginval_array[str(line_a[0][0]+' '+line_a[0][1]+' '+line_a[0][2])] = line_a
+                    self.symmtric.append(str(line_a[0][0]+' '+line_a[0][1]+' '+line_a[0][2]))
+                    self.enginval_array[str(line_a[0][0]+' '+line_a[0][1]+' '+line_a[0][2])].pop(0)
+                    line_a = []
+                else:
+                    pass
+
+        # k = self.enginval_array.items()[0]
+        # print(k)
+        # del self.enginval_array[k]
+        # print(self.enginval_array)
+        pass
+
+    def parse(self):
+        # deepcopy the enginval_array
+        d = copy.deepcopy(self.enginval_array)
+        del d[self.symmtric[0]]
+        return d
+    def plotEigenVal(self):
+        trace_t = []
+        if len(self.parse()) != 0:
+            pass
+            tmp_mode = []
+            egnval_array = []
+            egnval_array1 = []
+            egval_a = []
+            egval_a1 = []
+            for i in self.parse():
+                tmp_mode = self.parse()[i]
+                tmp_mode.pop(-1)
+                tmp_array = [] # get some enginval [[1,2,3,4]]
+                tmp_array1 = [] # get some enginval [[1,2,3,4]]
+                # print(tmp_mode)
+                for j in tmp_mode:
+                    tmp_array.append(int(j[0]))
+                    tmp_array1.append(float(j[1]))
+                egnval_array.append(tmp_array)
+                egnval_array1.append(tmp_array1)
+
+            # print(egnval_array1[0])
+            for i in range(1,len(egnval_array1[0])):
+                egval = []
+                egval1 = []
+                for j in range(1,len(egnval_array)):
+                    egval.append(egnval_array1[j][i])
+                    egval1.append(egnval_array[j][i])
+                    # print(str(i)+' '+str(j)+'= '+str(egnval_array1[j][i]))
+                egval_a.append(egval)
+                egval_a1.append(egval1)
+            # print(egval_a1)
+
+            eva = [1,2,3,4,5,6,7]
+            for i in range(80,len(egval_a1)):
+                trace = go.Scatter(x=eva,y=egval_a[i],mode='lines+markers')
+                trace_t.append(trace)
+
+            layout = dict(title = 'Electronic EIGENVAL',yaxis = dict(title='Energy/eV'),xaxis = dict(title='grid mode'))
+            data = trace_t
+            fig = dict(data=data,layout=layout)
+            # Plot and embed in ipython notebook!
+            plot(fig, filename='EIGENVAL')
+
+
+
+            pass
+
 
 class DOSCAR(object):
+    ionic = ['Pt','C','O']
     rawdata = {}
     data_x = {}
     data_y = {}
@@ -461,7 +551,7 @@ class DOSCAR(object):
     nedos_step =302 #default step of NEDOS get from the NEDOS
     signal = 0
     d_center = {}
-    name = ['s','px','py','pz','dxy','dyz','dxz','dz2','dx2','f1','f2','f3','f4','f5','f6','f7']
+    name = ['energy','s','py','pz','px','dxy','dyz','dz2','dxz','dx2-dy2','f1','f2','f3','f4','f5','f6','f7']
     def read(self,filedir,filename):
         with open(filedir+'/'+filename,'r') as f:
             i = 1
@@ -477,60 +567,66 @@ class DOSCAR(object):
                         #line_a.pop(0)
                         line_a.pop()
                         self.rawdata[self.signal] = line_a
-                        # print(line_a)
-                        # print(self.rawdata[1])
-
                         self.signal = self.signal+1
                         line_a = []
 
 
         # print(self.rawdata[1])
-    def parse(self):
+    def parse(self,start=1,end=2,index=1):
+
         data_x_t = []
         data_y_t = []
-        for j in range(1,self.signal):
+        for i in self.rawdata[0]:
+            data_x_t.append(float(i[0])) # energy and the datasets 
+            data_y_t.append(float(i[1])) # energy and the s density of status
+        self.data_x[0] = data_x_t
+        self.data_y[0] = data_y_t
+        data_x_t = []
+        data_y_t = []
+        for j in range(start,end):
             for i in self.rawdata[j]:
-                data_x_t.append(float(i[0]))
-                data_y_t.append(float(i[1]))
+                data_x_t.append(float(i[0])) # energy and the datasets 
+                data_y_t.append(float(i[index])) # energy and the s density of status
             self.data_x[j] = data_x_t
             self.data_y[j] = data_y_t
             data_x_t = []
             data_y_t = []
-    def test(self,item_num=6):
+
+
+    def plotDOSCAR(self,index=3):
         # N = 1000
         # random_x = np.random.randn(N)
         # random_y = np.random.randn(N)
+        self.parse(1,5,index)
+        # get the which of DOS should be plot
 
-        if item_num<(self.signal-1):
-            x_t  ={}
-            y_t = {}
-            trace_t = []
-            for i in range(1,item_num):
-                x_t[i] = self.data_x[i]
-                y_t[i] = self.data_y[i]
-
-            # Create a trace
-            for i in range(1,item_num):
-                trace = go.Scatter(
-                    x=x_t[i],
-                    y=y_t[i],
-                    name = self.name[i],
-                    mode='lines+markers'
-                )
-                trace_t.append(trace)
-            layout = dict(title = 'Electronic Density of States',yaxis = dict(title='Density(states/eV)'),xaxis = dict(title='Energy(eV)'))
-            data = trace_t
-            fig = dict(data=data,layout=layout)
-            # Plot and embed in ipython notebook!
-            plot(fig, filename='basic-scatter')
-        else:
-            print("item_num>signal")
-            pass
+        x_t  ={}
+        y_t = {}
+        trace_t = []
+        for i in range(1,len(self.data_x)):
+            x_t[i] = self.data_x[i]
+            y_t[i] = self.data_y[i]
+        # print(x_t)
+        # print(y_t)
+        # Create a trace
+        for i in range(1,len(self.data_x)):
+            trace = go.Scatter(
+                x=x_t[i],
+                y=y_t[i],
+                name = str(i)+self.name[index],
+                mode='lines+markers'
+            )
+            trace_t.append(trace)
+        layout = dict(title = 'Electronic Density of States',yaxis = dict(title='Density(states/eV)'),xaxis = dict(title='E-Ef(eV)'))
+        data = trace_t
+        fig = dict(data=data,layout=layout)
+        # Plot and embed in ipython notebook!
+        pl.iplot(fig, filename='DOSCAR.html')
 
         # or plot with: plot_url = py.plot(data, filename='basic-line')
 
     def dcenter(self,start,end,index=1):
-        # index was the intergrated curve of the dcenter and using for index=1
+        # index was the intergrated curve of the dcenter and using for index=1 was the s
         # intergrate from start to end [start ,end]
         # calculate the dos intergrate and the dcenter
         if start <end :
