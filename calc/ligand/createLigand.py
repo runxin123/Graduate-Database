@@ -13,12 +13,12 @@ class autogen(object):
 	'''
 	auto genarator the slab and adsorbate
 	'''
-	slab_name = ['Pt','Pd','Rh','Ru','Ag','Au','Pb','Cu','Fe','Ni','Co','Ir','Mo']
-	# slab_name = ['Ir']
+	# slab_name = ['Pt','Pd','Rh','Ru','Ag','Au','Pb','Cu','Fe','Ni','Co','Ir','Mo']
+	slab_name = ['Rh','Ru','Ir']
 	slabs = [] # build slabs array()
 	s_types = {} # slab types 
-	adsorbate_name = ['CO','CO2','NO','H2','H2O','NO2','O','H','OH','N2O']
-	# adsorbate_name = ['NH3']
+	# adsorbate_name = ['CO','CO2','NO','H2','H2O','NO2','O','H','OH','N2O','NH2','CH3','NH']
+	adsorbate_name = ['CO','NO','OH']
 	adsorbates = {}
 	vacuum = 15.0
 	lattice_indice = {'fcc':{'111':['ontop','fcc','hcp','bridge'],'110':['ontop','longbridge','shortbridge','hollow'],'100':['ontop','bridge','hollow']},
@@ -73,10 +73,13 @@ class autogen(object):
 		# todo bind ligand and slab
 		for ads in adsorbate_t:
 			for i in self.slabs:
-				slabdir = i['element']+'/'+i['types']+'/'+'slab/'
+				slabdir =i['element']+'/slab/'+i['types']+'/'
 				slabdir_t = './Database/'+slabdir
 				mkdirs(slabdir_t)
-				write(str(slabdir_t+'POSCAR'),i['slab'])
+				# print(slabdir_t)
+				slab_b = copy.deepcopy(i['slab'])
+				t_slab = fixlayers(slab_b,2)
+				write(str(slabdir_t+'POSCAR'),t_slab)
 				modifyPOSCAR(slabdir_t,'POSCAR')
 				for j in self.s_types[i['types']]:
 					ads_dir = i['element']+'/'+ads+'/'+i['types']+'/'+j
@@ -172,7 +175,7 @@ def build_slab(symbol = 'Pt',size=(3,3,4),a=3.5,vacuum=15,types='fcc111',c=0):
 		pass
 
 
-def adsorption(path,filename,slab,adsorbate,position = 'ontop',height=3,size=(1,1,1)):
+def adsorption(path,filename,slab,adsorbate,position = 'ontop',height=1.5,size=(1,1,1)):
 	# size supercell size
 	'''
 	@ path was file that create
@@ -214,3 +217,7 @@ def fixlayers(slab,layer):
 	# plane = FixedPlane(-1, (1, 0, 0))
 	slab.set_constraint(fixlayers)
 	return slab
+
+
+
+test()
